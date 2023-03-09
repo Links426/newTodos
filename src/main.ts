@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import 'uno.css'
 import '@/assets/css/reset.css'
+import '@/assets/css/shortCut.css'
 
 import router from '@/router/router'
 import 'normalize.css'

@@ -1,7 +1,9 @@
 <template>
-    <div flex flex-col h-100vh min-w-800px>
+    <div class="mainContainer">
         <!-- 顶部nav -->
-        <div class="h-70px items-center navContainer">
+        <div
+            class="h-70px items-center navContainer bg-white fixed w-full z-10"
+        >
             <!-- logo -->
             <img src="@/assets/logo.svg" />
             <!-- 选择页面 -->
@@ -20,117 +22,70 @@
             </div>
         </div>
         <!-- 主体内容 -->
-        <div w-full flex-1>
-            <div class="leftContainer">
-                <!-- 顶部日历 -->
-                <div w-240px>
-                    <div mb-20px text-18px>Calendar</div>
-                    <div
-                        class="flex justify-center justify-around bg-#EFF6FF py-8px rounded-24px mb-20px"
-                    >
-                        <div>Day</div>
-                        <div>Week</div>
-                        <div>Month</div>
-                    </div>
-                    <div flex justify-between items-center mb-18px>
-                        <i
-                            class="iconfont icon-xiangzuo1 changePageButton flex-center"
-                        ></i>
-                        <div>
-                            {{
-                                MONTH_TYPE_LIST.find(
-                                    (item) => item.index === month
-                                )?.value || ''
-                            }}
-                            {{ year }}
-                        </div>
-                        <i
-                            class="iconfont icon-xiangyou1 changePageButton flex-center"
-                        ></i>
-                    </div>
-                    <!-- 顶部日期 -->
-                    <div class="flex text-#9CB2CD mb-20px">
-                        <view
-                            v-for="day in DAY_TYPE_LIST"
-                            :key="day.index"
-                            w-34px
-                            text-center
-                            >{{ day.value }}</view
-                        >
-                    </div>
-                    <!-- 下方日期 -->
-                    <div flex flex-wrap>
+        <div class="centerContainer">
+            <div class="leftContainer h-full"><Calendar /></div>
+            <div class="bg-#EFF6FF h-full w-full overflow-scroll">
+                <IndexMessageNav />
+                <div flex>
+                    <!-- 第一行 -->
+                    <div min-w-80px h-full bg-white>
                         <div
-                            v-for="(item, index) in oneMonthArr"
-                            :key="index"
-                            class="w-34px mb-16px text-center text-#9CB2CD"
+                            class="w-full h-48px flex-center defaultBorder b-l-0"
+                        ></div>
+                        <div
+                            class="w-full h-60px defaultBorder b-b-0 b-t-0 b-l-0 flex-center text-#9CB2CD"
+                            v-for="time in TIME_LIST"
+                            :key="time.index"
                         >
-                            {{ item.date }}
+                            {{ time.value }}
                         </div>
+                    </div>
+                    <div
+                        min-w-150px
+                        h-full
+                        bg-white
+                        v-for="day in DAY_TYPE_LIST"
+                        :key="day.index"
+                    >
+                        <div
+                            class="w-full h-48px flex-center defaultBorder b-l-0"
+                        >
+                            {{ day.value }}
+                        </div>
+                        <div
+                            class="w-full h-30px defaultBorder b-t-0 b-l-0 flex-center text-#9CB2CD"
+                            v-for="time in TIME_LIST"
+                            :key="time.index"
+                        ></div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div
+            class="fixed pointer bg-#4380FF text-20px flex-center w-60px h-60px z-12 rounded right-40px bottom-40px"
+        >
+            <i class="iconfont icon-jiahao1 text-24px text-white"></i>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
-import { getTime } from '@/service/getTime'
-import { computed, reactive, ref } from 'vue'
-import { DAY_TYPE_LIST, MONTH_TYPE_LIST } from '@/utils/constant'
+import { onMounted, reactive, ref } from 'vue'
+import { changeMonth, getNowTime } from '@/utils/changeTime'
+import Calendar from '@/views/index/components/index-Calendar.vue'
+import IndexMessageNav from '@/views/index/components/index-messageNav.vue'
 
-// 获取当前的月份和年份
-const date = new Date()
-const { year, month } = getTime(date)
-const realMonth = computed(() => {
-    return month + 1
+import { DAY_TYPE_LIST, TIME_LIST } from '@/utils/constant'
+
+// 获取当日时间
+const time = new Date()
+const { year, month } = getNowTime(time)
+const nowMonth = ref(month)
+const currentMonthArray: any = reactive([])
+
+onMounted(() => {
+    changeMonth(year, nowMonth.value, currentMonthArray)
 })
-
-// 获取上个月最后一天的时间戳
-const currentLastDayRaw: any = new Date(year, month, 0)
-
-const lastDay: any = computed(() => {
-    return Date.parse(currentLastDayRaw)
-})
-
-const oneDay = 24 * 60 * 60 * 1000
-const oneMonthArr: any = reactive([])
-const getCurrentMonth = () => {
-    for (let i = 0; i < 42; i++) {
-        oneMonthArr.push({
-            date: new Date(lastDay.value + i * oneDay).getDate(),
-            month: new Date(lastDay.value + i * oneDay).getMonth() + 1,
-            year: new Date(lastDay.value + i * oneDay).getFullYear(),
-            day: new Date(lastDay.value + i * oneDay).getDay(),
-        })
-    }
-}
-getCurrentMonth()
-const index = ref(1)
-
-const getNextCurrentMonth = () => {
-    // reactive 数组 只能通过 Array.length = 0,清空
-    oneMonthArr.length = 0
-    for (let i = 0; i < 42; i++) {
-        oneMonthArr.push({
-            date: new Date(
-                lastDay.value + 42 * index.value * oneDay + i * oneDay
-            ).getDate(),
-            month:
-                new Date(
-                    lastDay.value + 42 * index.value * oneDay + i * oneDay
-                ).getMonth() + 1,
-            year: new Date(
-                lastDay.value + 42 * index.value * oneDay + i * oneDay
-            ).getFullYear(),
-            day: new Date(
-                lastDay.value + 42 * index.value * oneDay + i * oneDay
-            ).getDay(),
-        })
-    }
-    console.log(oneMonthArr)
-
-    index.value++
-}
 </script>
 
 <style scoped>
@@ -143,28 +98,49 @@ const getNextCurrentMonth = () => {
 .iconfont {
     font-size: 30px;
 }
-.overScroll {
-    overflow: scroll;
-}
 .leftContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 270px;
     padding: 30px 15px;
-    height: 100%;
     box-shadow: inset -1px 0px 0px 0px #d7e3f1;
 }
-.changePageButton {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-    border-radius: 6px;
-    color: #9cb2cd;
-    border: 0.77px solid #dee2ec;
-    background: #fff;
-}
+
 .notCurrentMonth {
     color: #d8e3f1;
+}
+.mainContainer {
+    display: grid;
+    grid-template-rows: 70px calc(100vh - 70px);
+}
+
+.centerContainer {
+    display: flex;
+    display: fixed;
+    width: 100vw;
+    margin-top: 70px;
+    height: calc(100vh - 70px);
+}
+
+.dateTimeBlock {
+    border: 0.7696px solid #dee2ec;
+    border-left: 0;
+    border-left: 0;
+}
+.defaultBorder {
+    border: 0.7696px solid #dee2ec;
+}
+.b-l-0 {
+    border-left: none;
+}
+.b-r-0 {
+    border-right: none;
+}
+.b-t-0 {
+    border-top: none;
+}
+.b-b-0 {
+    border-bottom: none;
 }
 </style>

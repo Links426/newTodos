@@ -1,6 +1,25 @@
 .pointer {
     cursor: pointer;
 }
-.overScroll {
+.t-5s {
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -ms-transition: all 0.5s;
+    -o-transition: all 0.5s;
+}
+.over-scr {
     overflow: scroll;
+}
+.b-l-0 {
+    border-left: none;
+}
+.b-r-0 {
+    border-right: none;
+}
+.b-t-0 {
+    border-top: none;
+}
+.b-b-0 {
+    border-right: none;
 }
