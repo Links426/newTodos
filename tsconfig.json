@@ -31,7 +31,8 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "src/*.js",
-        "src/**/*.jsx"
+        "src/**/*.jsx",
+        "auto-imports.d.ts"
     ],
     "exclude": ["node_modules"],
     "references": [

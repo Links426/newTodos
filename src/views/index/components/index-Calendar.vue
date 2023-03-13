@@ -41,7 +41,6 @@
                 :key="index"
                 class="text-#d8e3f1 pointer t-5s"
                 :class="item.month === nowMonth + 1 ? 'CurrentMonth' : ''"
-                @click="selectDate(item)"
             >
                 <view
                     class="t-5s w-34px h-34px rounded flex-center"
@@ -59,15 +58,18 @@
 <script setup lang="ts">
 import { DAY_TYPE_LIST, MONTH_TYPE_LIST } from '@/utils/constant'
 import { changeMonth, getNowTime } from '@/utils/changeTime'
-import { onMounted, reactive, ref } from 'vue'
 // 获取当日时间
 const time = new Date()
-const { year, month, date } = getNowTime(time)
+const { year, month, date, todayTimeStamp } = getNowTime(time)
+
+
 const nowMonth = ref(month)
 const nowYear = ref(year)
 const currentMonthArray: any = reactive([])
 onMounted(() => {
     changeMonth(nowYear.value, nowMonth.value, currentMonthArray)
+    console.log(currentMonthArray)
+    console.log(todayTimeStamp)
 })
 
 const preMonth = () => {
@@ -90,7 +92,6 @@ const nextMonth = () => {
 
     changeMonth(nowYear.value, nowMonth.value, currentMonthArray)
 }
-
 </script>
 
 <style scoped>
@@ -100,7 +101,7 @@ const nextMonth = () => {
     font-size: 14px;
     border-radius: 6px;
     color: #9cb2cd;
-    border: .7696px solid #dee2ec;
+    border: 0.7696px solid #dee2ec;
     background: #fff;
 }
 .CurrentMonth {

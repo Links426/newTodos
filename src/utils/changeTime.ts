@@ -10,11 +10,20 @@ export const getNowTime = (time: {
     const month = time.getMonth()
     const date = time.getDate()
     const day = time.getDay()
-    return { year, month, date, day }
+    const todayTimeStamp = Date.parse(
+        new Date(year, month, date) as unknown as string
+    )
+    return { year, month, date, day, todayTimeStamp }
 }
 export const getCurrentMonth = (
     lastDay: number,
-    timeArr: { date: number; month: number; year: number; day: number }[]
+    timeArr: {
+        date: number
+        month: number
+        year: number
+        day: number
+        timeStamp: number
+    }[]
 ) => {
     for (let i = 0; i < 42; i++) {
         timeArr.push({
@@ -22,6 +31,7 @@ export const getCurrentMonth = (
             month: new Date(lastDay + i * oneDay).getMonth() + 1,
             year: new Date(lastDay + i * oneDay).getFullYear(),
             day: new Date(lastDay + i * oneDay).getDay(),
+            timeStamp: lastDay + i * oneDay,
         })
     }
 }
